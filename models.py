@@ -67,7 +67,7 @@ class RegressionModel(object):
         "*** YOUR CODE HERE ***"
         self.layersize = 25
         self.batchsize = 8
-        self.learningrate = 0.1
+        self.learningrate = 0.05
 
         self.w1 = nn.Parameter(1, self.layersize)
         self.b1 = nn.Parameter(1, self.layersize)
@@ -88,8 +88,10 @@ class RegressionModel(object):
         "*** YOUR CODE HERE ***"
         linearized = nn.Linear(x, self.w1)
         h1 = nn.ReLU(nn.AddBias(linearized, self.b1))
+
         linearized = nn.Linear(h1, self.w2)
         h2 = nn.ReLU(nn.AddBias(linearized, self.b2))
+
         linearized = nn.Linear(h2, self.w3)
         return nn.AddBias(linearized, self.b3)
         "*** END CODE HERE ***"
@@ -116,16 +118,17 @@ class RegressionModel(object):
         "*** YOUR CODE HERE ***"
         M = [self.w1, self.w2, self.w3]
         B = [self.b1, self.b2, self.b3]
+        parameters = M + B
         multiplier = -self.learningrate
         scalarLoss = float('inf')
+        
         while scalarLoss > 0.01:
             for x, y in dataset.iterate_once(self.batchsize):
                 loss = self.get_loss(x, y)
                 scalarLoss = nn.as_scalar(loss)
-                parameters = M + B
                 gradients = nn.gradients(loss, parameters)
-                for i in range(len(parameters)):
-                    parameters[i].update(gradients[i], multiplier)
+                for p, g in zip(parameters, gradients):
+                    p.update(g, multiplier)
         "*** END CODE HERE ***"
 
 class DigitClassificationModel(object):
@@ -145,6 +148,9 @@ class DigitClassificationModel(object):
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
+        self.layersize = 25
+        self.batchsize = 8
+        self.learningrate = 0.1
 
     def run(self, x):
         """
@@ -176,6 +182,7 @@ class DigitClassificationModel(object):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
+
 
     def train(self, dataset):
         """
